@@ -70,7 +70,7 @@ body {
   stroke-width: 1.4;
   fill: none;
 }
-.hex-side .pulse path {
+.hex-side .wave path {
   fill: none;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -221,5 +221,5 @@ a:focus-visible {
 
 @media (prefers-reduced-motion: reduce) {
   .hero { animation: none; }
-  .hex-side .pulse { display: none; }
+  .hex-side .wave { display: none; }
 }
