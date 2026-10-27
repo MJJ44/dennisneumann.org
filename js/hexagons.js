@@ -5,6 +5,9 @@
   const R = 118;                    // Radius einer Wabe (Mitte bis Ecke)
   const H = Math.sqrt(3) * R;       // Höhe einer Wabe
   const COL_X = 177;                // Mitte der vollständig sichtbaren Spalte
+  const PULSES = 3;                 // gleichzeitige Impulse je Seite
+  const SPEED = 240;                // Geschwindigkeit der Impulse in px/s
+  let renderCount = 0;
 
   // Kleiner Zufallsgenerator mit festem Startwert, damit das Muster stabil bleibt
   function rng(seed) {
@@ -49,12 +52,7 @@
     );
     const glow = el("filter", { id: "glow" + seed, x: "-300%", y: "-300%", width: "700%", height: "700%" });
     glow.append(el("feGaussianBlur", { stdDeviation: "3.5" }));
-    const halo = el("radialGradient", { id: "halo" + seed });
-    halo.append(
-      el("stop", { offset: "0", "stop-color": "#ffd77a", "stop-opacity": "0.9" }),
-      el("stop", { offset: "1", "stop-color": "#ffb020", "stop-opacity": "0" })
-    );
-    defs.append(grad, glow, halo);
+    defs.append(grad, glow);
     svg.append(defs);
 
     const g = el("g", {});
@@ -91,32 +89,97 @@
         stroke: `url(#hexGold${seed})`,
         opacity: (0.35 + rand() * 0.6).toFixed(2)
       });
-      if (rand() < 0.12) {
-        line.classList.add("spark");
-        line.style.setProperty("--dur", (5 + rand() * 6).toFixed(1) + "s");
-        line.style.setProperty("--delay", (-rand() * 10).toFixed(1) + "s");
-      }
       g.append(line);
     });
 
-    corners.forEach((p) => {
-      if (p[0] < 0 || p[0] > 330 || rand() > 0.35) return;
-      const light = el("g", { class: "light" });
-      light.style.setProperty("--dur", (3 + rand() * 4).toFixed(1) + "s");
-      light.style.setProperty("--delay", (-rand() * 7).toFixed(1) + "s");
-      light.append(
-        el("circle", { cx: p[0], cy: p[1], r: 20, fill: `url(#halo${seed})` }),
-        el("circle", { cx: p[0], cy: p[1], r: 5, fill: "#ffcf5c", filter: `url(#glow${seed})` }),
-        el("circle", { cx: p[0], cy: p[1], r: 2.6 })
-      );
-      g.append(light);
+    // Nachbarn jeder Ecke, damit die Impulse den Kanten folgen können
+    const neighbours = new Map();
+    edges.forEach(([p, q]) => {
+      const a = key(p), b = key(q);
+      if (!neighbours.has(a)) neighbours.set(a, []);
+      if (!neighbours.has(b)) neighbours.set(b, []);
+      neighbours.get(a).push(b);
+      neighbours.get(b).push(a);
     });
+    const visible = (k) => {
+      const p = corners.get(k);
+      return p[0] > -10 && p[0] < 340 && p[1] > -60 && p[1] < height + 60;
+    };
+    const starts = [...corners.keys()].filter(visible);
+
+    for (let i = 0; i < PULSES; i++) {
+      startPulse(g, seed, () => randomWalk(starts, neighbours, visible, corners), 0.4 + i * 1.6 + Math.random());
+    }
+  }
+
+  // Zufälliger Weg entlang der Kanten, ohne direkt umzukehren
+  function randomWalk(starts, neighbours, visible, corners) {
+    let current = starts[Math.floor(Math.random() * starts.length)];
+    let previous = null;
+    const path = [corners.get(current)];
+    const steps = 5 + Math.floor(Math.random() * 5);
+    for (let i = 0; i < steps; i++) {
+      const options = neighbours.get(current).filter((k) => k !== previous && visible(k));
+      if (!options.length) break;
+      previous = current;
+      current = options[Math.floor(Math.random() * options.length)];
+      path.push(corners.get(current));
+    }
+    return path;
+  }
+
+  // Ein Lichtimpuls: drei übereinanderliegende Striche gleicher Spitze,
+  // unterschiedlich lang, ergeben einen hellen Kopf mit auslaufendem Schweif
+  const LAYERS = [
+    { dash: 120, width: 4,   color: "#e6b34a", opacity: 0.45, blur: true },
+    { dash: 60,  width: 2,   color: "#f7d27a", opacity: 0.9 },
+    { dash: 18,  width: 2.2, color: "#fff6dc", opacity: 1 }
+  ];
+
+  function startPulse(g, seed, makePath, delay) {
+    const generation = renderCount;
+    const group = el("g", { class: "pulse" });
+    const paths = LAYERS.map((layer) => {
+      const path = el("path", {
+        stroke: layer.color,
+        "stroke-width": layer.width,
+        opacity: layer.opacity
+      });
+      if (layer.blur) path.setAttribute("filter", `url(#glow${seed})`);
+      group.append(path);
+      return path;
+    });
+    g.append(group);
+
+    function run() {
+      if (generation !== renderCount) return;
+      const pts = makePath();
+      const length = (pts.length - 1) * R;
+      const travel = length + LAYERS[0].dash;
+      const duration = travel / SPEED;
+      const d = "M" + pts.map((p) => p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" L");
+
+      let animation;
+      paths.forEach((path, i) => {
+        const dash = LAYERS[i].dash;
+        path.setAttribute("d", d);
+        path.style.strokeDasharray = `${dash} ${length + travel}`;
+        animation = path.animate(
+          [{ strokeDashoffset: `${dash}px` }, { strokeDashoffset: `${dash - travel}px` }],
+          { duration: duration * 1000, easing: "linear", fill: "both" }
+        );
+      });
+      animation.onfinish = () => setTimeout(run, 600 + Math.random() * 2400);
+    }
+
+    setTimeout(run, delay * 1000);
   }
 
   const left = document.querySelector(".hex-left");
   const right = document.querySelector(".hex-right");
 
   function render() {
+    renderCount++;
     draw(left, false, 7);
     draw(right, true, 31);
   }

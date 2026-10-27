@@ -12,7 +12,7 @@ Stand: 27.10.2026
 ## Design
 - Schwarzer Hintergrund, Gold-/Weiß-Akzente wie im Konzept (`referenz/konzept-mockup.png`).
 - Logo-PNG wird unverändert genutzt (schwarzer Hintergrund verschmilzt mit der Seite).
-- Goldene Waben links und rechts **per Code (SVG/CSS) animiert**, mit sanft pulsierenden Lichtpunkten.
+- Goldene Waben links und rechts **per Code (SVG/CSS) animiert**, durch die Lichtimpulse auf zufälligen Wegen entlang der Kanten laufen (keine pulsierenden Lichtpunkte).
 - Responsiv: auf dem Handy Waben reduziert/ausgeblendet, Logo skaliert.
 
 ## Technik

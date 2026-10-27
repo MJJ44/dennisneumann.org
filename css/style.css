@@ -70,21 +70,10 @@ body {
   stroke-width: 1.4;
   fill: none;
 }
-.hex-side .edge.spark {
-  animation: spark var(--dur, 6s) ease-in-out var(--delay, 0s) infinite;
-}
-.hex-side .light {
-  fill: #fff6dc;
-  animation: pulse var(--dur, 4s) ease-in-out var(--delay, 0s) infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 0.15; }
-  50%      { opacity: 1; }
-}
-@keyframes spark {
-  0%, 100% { stroke: #e6b34a; }
-  50%      { stroke: #fff3d1; }
+.hex-side .pulse path {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 /* ---------- Navigation ---------- */
@@ -231,5 +220,6 @@ a:focus-visible {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero, .hex-side .light, .hex-side .edge.spark { animation: none; }
+  .hero { animation: none; }
+  .hex-side .pulse { display: none; }
 }
