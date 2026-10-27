@@ -6,8 +6,9 @@ Stand: 27.10.2026
 - **Navigation oben (zentriert):** nur der Reiter **HOME**, der immer zur Startseite führt (aktiv in Gold mit Unterstrich).
 - Kein Reiter „Kontakt“ (gestrichen).
 - **Mitte:** Logo (`assets/img/logo.png`, zugeschnitten aus `referenz/logo-original.png`), darunter Schriftzug „dennis neumann“ (Serifenschrift, weit gesperrt, weiß) und eine goldene Trennlinie mit Waben-Symbol.
-- **Footer:** dauerhaft sichtbar, Brief-Icon + `mail@dennisneumann.org`.
-  Klick öffnet das lokale E-Mail-Programm mit neuer Nachricht (`mailto:`-Link).
+- **Footer:** nur der Schriftzug „KONTAKT“ zwischen zwei Goldlinien (keine sichtbare E-Mail-Adresse, kein Icon, kein Copyright).
+  Klick öffnet das lokale E-Mail-Programm mit `mail@dennisneumann.org` in der An-Zeile (`mailto:`-Link).
+- Trennlinie, Footer-Linie und Kontakt sind exakt so breit wie der Schriftzug „dennis neumann“.
 
 ## Design
 - Schwarzer Hintergrund, Gold-/Weiß-Akzente wie im Konzept (`referenz/konzept-mockup.png`).
