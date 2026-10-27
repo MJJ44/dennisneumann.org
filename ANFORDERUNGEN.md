@@ -11,7 +11,7 @@ Stand: 27.10.2026
 
 ## Design
 - Schwarzer Hintergrund, Gold-/Weiß-Akzente wie im Konzept (`referenz/konzept-mockup.png`).
-- Logo-PNG wird unverändert genutzt (schwarzer Hintergrund verschmilzt mit der Seite).
+- Logo als freigestelltes PNG mit transparentem Hintergrund (aus dem Original erzeugt).
 - Goldene Waben links und rechts **per Code (SVG/CSS) animiert**, durch die in regelmäßigen Abständen ein Lichtimpuls läuft: eine ringförmige Welle, die vom Logo ausgeht und die Kanten beim Durchlaufen aufleuchten lässt (keine pulsierenden Lichtpunkte).
 - Responsiv: auf dem Handy Waben reduziert/ausgeblendet, Logo skaliert.
 

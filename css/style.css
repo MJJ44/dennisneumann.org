@@ -6,6 +6,13 @@
   font-display: swap;
 }
 @font-face {
+  font-family: "Cormorant Garamond";
+  src: url("../assets/fonts/cormorant-garamond-latin-500-italic.woff2") format("woff2");
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
   font-family: "Inter";
   src: url("../assets/fonts/inter-latin-300-normal.woff2") format("woff2");
   font-weight: 300;
@@ -18,15 +25,20 @@
   font-display: swap;
 }
 
-/* ---------- Farben ---------- */
+/* ---------- Farben und Schriften ---------- */
 :root {
   --bg: #000;
-  --footer-bg: #0c0c0c;
+  --bg-warm: #120d05;
   --gold: #e6b34a;
   --gold-light: #f7d27a;
   --gold-dark: #a8741f;
   --white: #f4f1ea;
-  --muted: #cfcac0;
+  --muted: #a9a397;
+  --faint: #6a655b;
+  --serif: "Cormorant Garamond", Georgia, serif;
+  --sans: "Inter", system-ui, -apple-system, sans-serif;
+  --pulse: 0;                       /* wird von js/hexagons.js beim Impuls gesetzt */
+  color-scheme: dark;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -38,11 +50,15 @@ body {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  background: var(--bg);
+  /* warmer, kaum sichtbarer Lichtschein hinter dem Logo */
+  background:
+    radial-gradient(ellipse 55% 50% at 50% 45%, var(--bg-warm) 0%, transparent 70%),
+    var(--bg);
   color: var(--white);
-  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  font-family: var(--sans);
   font-weight: 300;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* ---------- Waben-Hintergrund ---------- */
@@ -67,7 +83,7 @@ body {
 }
 
 .hex-side .edge {
-  stroke-width: 1.4;
+  stroke-width: 1.2;
   fill: none;
 }
 .hex-side .wave path {
@@ -80,7 +96,8 @@ body {
 .site-header {
   position: relative;
   z-index: 2;
-  padding: 2.4rem 1rem 0;
+  padding: 2.6rem 1rem 0;
+  animation: fadeIn 1.2s ease-out 0.9s both;
 }
 .nav {
   display: flex;
@@ -92,113 +109,213 @@ body {
   color: var(--muted);
   text-decoration: none;
   text-transform: uppercase;
-  font-size: 1.2rem;
-  letter-spacing: 0.04em;
-  padding: 0 0.6rem 0.75rem;
-  transition: color 0.25s;
+  font-size: 0.82rem;
+  font-weight: 400;
+  letter-spacing: 0.34em;
+  /* gleicht den Abstand nach dem letzten Buchstaben aus */
+  padding: 0 0 0.9rem 0.34em;
+  transition: color 0.3s;
 }
 .nav-link::after {
   content: "";
   position: absolute;
-  left: 0;
-  right: 0;
+  left: -0.6rem;
+  right: -0.6rem;
   bottom: 0;
-  height: 2px;
-  background: var(--gold);
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--gold) 25%, var(--gold) 75%, transparent);
   transform: scaleX(0);
-  transition: transform 0.3s ease;
+  transition: transform 0.4s ease;
 }
 .nav-link:hover,
-.nav-link.is-active { color: var(--gold); }
+.nav-link.is-active { color: var(--gold-light); }
 .nav-link:hover::after,
 .nav-link.is-active::after { transform: scaleX(1); }
 
 /* ---------- Logo-Bereich ---------- */
 .hero {
   position: relative;
-  z-index: 1;
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 2rem 1rem 4rem;
+  padding: 2rem 1rem 3.5rem;
   text-align: center;
-  animation: fadeIn 1.6s ease-out both;
+}
+
+.mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  animation: logoIn 1.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+/* goldener Schein hinter dem Logo, der beim Aussenden des Impulses kurz aufglimmt */
+.mark::before {
+  content: "";
+  position: absolute;
+  inset: -18%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(230, 179, 74, 0.22) 0%, rgba(230, 179, 74, 0.06) 40%, transparent 68%);
+  opacity: calc(0.35 + var(--pulse) * 0.65);
+  transform: scale(calc(0.92 + var(--pulse) * 0.1));
+  pointer-events: none;
 }
 
 .logo {
+  position: relative;
   width: clamp(200px, 30vw, 400px);
   height: auto;
-  /* blendet den (fast) schwarzen Bildhintergrund nahtlos in die Seite */
-  mix-blend-mode: lighten;
 }
 
 .wordmark {
   margin-top: 1.4rem;
-  font-family: "Cormorant Garamond", Georgia, serif;
+  font-family: var(--serif);
   font-weight: 500;
   font-size: clamp(1.6rem, 4.6vw, 3.6rem);
   letter-spacing: 0.42em;
   /* gleicht den Abstand nach dem letzten Buchstaben aus, damit der Schriftzug mittig sitzt */
   margin-right: -0.42em;
-  color: var(--white);
   line-height: 1.1;
+  background: linear-gradient(180deg, #fffdf8 0%, var(--white) 55%, #cfc8b8 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+  animation: wordIn 2s cubic-bezier(0.2, 0.7, 0.2, 1) 0.35s both;
 }
 
 .divider {
   display: flex;
   align-items: center;
-  gap: 1.1rem;
+  gap: 1rem;
   width: clamp(240px, 40vw, 540px);
-  margin-top: 2rem;
+  margin-top: 2.1rem;
 }
 .divider-line {
   flex: 1;
   height: 1px;
+  animation: lineIn 1.4s cubic-bezier(0.2, 0.7, 0.2, 1) 0.9s both;
 }
-.divider-line:first-child { background: linear-gradient(to right, transparent, var(--gold)); }
-.divider-line:last-child  { background: linear-gradient(to left,  transparent, var(--gold)); }
+.divider-line:first-child {
+  background: linear-gradient(to right, transparent, var(--gold));
+  transform-origin: right;
+}
+.divider-line:last-child {
+  background: linear-gradient(to left, transparent, var(--gold));
+  transform-origin: left;
+}
 .divider-hex {
-  width: 30px;
-  height: 26px;
+  width: 22px;
+  height: 19px;
+  filter: drop-shadow(0 0 6px rgba(230, 179, 74, 0.55));
+  animation: fadeIn 1s ease-out 0.8s both;
+}
+.divider-hex::before {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
   background: linear-gradient(135deg, var(--gold-light), var(--gold) 50%, var(--gold-dark));
   clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
 }
 
+/* ---------- Auftritt beim Laden ---------- */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: none; }
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes logoIn {
+  from { opacity: 0; transform: scale(0.96); filter: blur(6px); }
+  to   { opacity: 1; transform: none; filter: none; }
+}
+@keyframes wordIn {
+  from { opacity: 0; letter-spacing: 0.7em; margin-right: -0.7em; }
+  to   { opacity: 1; letter-spacing: 0.42em; margin-right: -0.42em; }
+}
+@keyframes lineIn {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
 }
 
 /* ---------- Footer ---------- */
 .site-footer {
   position: relative;
   z-index: 2;
-  background: var(--footer-bg);
-  border-top: 1px solid #1a1a1a;
-  padding: 1.8rem 1rem;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 2.4rem 1rem 1.8rem;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(18, 13, 5, 0.9));
+  animation: fadeIn 1.2s ease-out 1.2s both;
 }
+/* feine Goldlinie, die zu den Seiten hin ausläuft */
+.site-footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: min(720px, 80%);
+  height: 1px;
+  transform: translateX(-50%);
+  background: linear-gradient(to right, transparent, rgba(230, 179, 74, 0.55), transparent);
+}
+
+.footer-label {
+  font-size: 0.68rem;
+  font-weight: 400;
+  letter-spacing: 0.4em;
+  margin-right: -0.4em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
 .mail {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 1rem;
-  color: var(--muted);
+  gap: 0.8rem;
+  color: var(--white);
   text-decoration: none;
-  font-size: 1.15rem;
-  transition: color 0.25s;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.55rem;
+  letter-spacing: 0.02em;
+  padding-bottom: 0.25rem;
+  transition: color 0.3s;
+}
+.mail::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--gold), transparent);
+  transform: scaleX(0);
+  transition: transform 0.45s ease;
 }
 .mail:hover,
-.mail:focus-visible { color: var(--gold); }
+.mail:focus-visible { color: var(--gold-light); }
+.mail:hover::after,
+.mail:focus-visible::after { transform: scaleX(1); }
 .mail-icon {
-  width: 34px;
-  height: 34px;
+  width: 22px;
+  height: 22px;
+  flex: none;
   fill: none;
   stroke: var(--gold);
-  stroke-width: 1.3;
+  stroke-width: 1.2;
   stroke-linejoin: round;
+}
+
+.footer-copy {
+  margin-top: 0.9rem;
+  font-size: 0.66rem;
+  letter-spacing: 0.28em;
+  margin-right: -0.28em;
+  text-transform: uppercase;
+  color: var(--faint);
 }
 
 a:focus-visible {
@@ -211,15 +328,15 @@ a:focus-visible {
   .hex-side { width: 220px; opacity: 0.55; }
 }
 @media (max-width: 600px) {
-  .site-header { padding-top: 1.6rem; }
+  .site-header { padding-top: 1.8rem; }
   .hex-side { width: 130px; opacity: 0.4; }
   .logo { width: 62vw; }
-  .wordmark { letter-spacing: 0.3em; margin-right: -0.3em; }
-  .mail { font-size: 1rem; gap: 0.7rem; }
-  .mail-icon { width: 28px; height: 28px; }
+  .wordmark { letter-spacing: 0.3em; margin-right: -0.3em; animation-name: fadeIn; }
+  .mail { font-size: 1.25rem; gap: 0.6rem; }
+  .mail-icon { width: 18px; height: 18px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero { animation: none; }
+  .mark, .wordmark, .divider-line, .divider-hex, .site-header, .site-footer { animation: none; }
   .hex-side .wave { display: none; }
 }

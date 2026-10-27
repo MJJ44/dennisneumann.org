@@ -9,8 +9,8 @@
 
   const WAVE_DURATION = 3400;       // Laufzeit eines Impulses durch die Waben in ms
   const WAVE_PAUSE = 2800;          // Pause zwischen zwei Impulsen in ms
-  const TRAIL = 230;                // Länge des Nachglühens hinter der Wellenfront in px
-  const FRONT = 14;                 // Breite der hellen Wellenfront in px
+  const TRAIL = 320;                // Länge des Nachglühens hinter der Wellenfront in px
+  const FRONT = 18;                 // Breite der hellen Wellenfront in px
 
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -56,11 +56,11 @@
       el("stop", { offset: "1", "stop-color": "#a8741f" })
     );
     const glow = el("filter", { id: "glow" + seed, x: "-20%", y: "-20%", width: "140%", height: "140%" });
-    glow.append(el("feGaussianBlur", { stdDeviation: "4" }));
+    glow.append(el("feGaussianBlur", { stdDeviation: "6" }));
 
     // Ring aus einem radialen Verlauf: Nachglühen innen, helle Wellenfront außen
     const ring = el("radialGradient", { id: "ring" + seed, gradientUnits: "userSpaceOnUse" });
-    const stops = [0, 0, 0.5, 1, 0].map((opacity) =>
+    const stops = [0, 0, 0.65, 1, 0].map((opacity) =>
       el("stop", { offset: "0", "stop-color": "#fff", "stop-opacity": opacity })
     );
     ring.append(...stops);
@@ -109,9 +109,10 @@
     const light = el("g", { class: "wave", mask: `url(#wave${seed})` });
     const lightInner = el("g", { transform: flip });
     lightInner.append(
-      el("path", { d: allEdges, stroke: "#f2b950", "stroke-width": 7, filter: `url(#glow${seed})` }),
-      el("path", { d: allEdges, stroke: "#ffe7ad", "stroke-width": 2.2 }),
-      el("path", { d: allEdges, stroke: "#fffaf0", "stroke-width": 0.8 })
+      el("path", { d: allEdges, stroke: "#f2b950", "stroke-width": 12, filter: `url(#glow${seed})` }),
+      el("path", { d: allEdges, stroke: "#ffd27a", "stroke-width": 4, filter: `url(#glow${seed})` }),
+      el("path", { d: allEdges, stroke: "#ffe7ad", "stroke-width": 2.4 }),
+      el("path", { d: allEdges, stroke: "#fffaf0", "stroke-width": 1.1 })
     );
     light.append(lightInner);
     svg.append(light);
@@ -163,15 +164,23 @@
     waves.forEach((w) => (w.light.style.opacity = 0));
   }
 
+  // Das Logo glimmt kurz auf, kurz bevor die Welle die Waben erreicht
+  const root = document.documentElement;
+  const LEAD = 700;                 // Vorlauf des Aufglimmens vor dem Impuls in ms
+
   let start = null;
   function tick(now) {
-    if (start === null) start = now + 800;
-    const t = (now - start) % (WAVE_DURATION + WAVE_PAUSE);
+    if (start === null) start = now + 1800;
+    const cycle = WAVE_DURATION + WAVE_PAUSE;
+    const t = (now - start) % cycle;
     const progress = t >= 0 && t < WAVE_DURATION ? t / WAVE_DURATION : null;
     waves.forEach((w) => {
       if (progress === null) w.light.style.opacity = 0;
       else setWave(w, progress);
     });
+    const sinceGlow = (((now - start + LEAD) % cycle) + cycle) % cycle;
+    const glow = sinceGlow < 1600 ? Math.sin(Math.PI * Math.min(1, sinceGlow / 1600)) : 0;
+    root.style.setProperty("--pulse", (now - start + LEAD < 0 ? 0 : glow).toFixed(3));
     requestAnimationFrame(tick);
   }
 
