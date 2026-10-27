@@ -244,8 +244,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.55rem;
-  padding: 2.4rem 1rem 1.8rem;
+  padding: 2.2rem 1rem 2.4rem;
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(18, 13, 5, 0.9));
   animation: fadeIn 1.2s ease-out 1.2s both;
 }
@@ -261,62 +260,38 @@ body {
   background: linear-gradient(to right, transparent, rgba(230, 179, 74, 0.55), transparent);
 }
 
-.footer-label {
-  font-size: 0.68rem;
-  font-weight: 400;
-  letter-spacing: 0.4em;
-  margin-right: -0.4em;
-  text-transform: uppercase;
-  color: var(--gold);
-}
-
-.mail {
-  position: relative;
+/* "Kontakt" ist selbst der Link: öffnet das E-Mail-Programm mit mail@dennisneumann.org */
+.contact {
   display: inline-flex;
   align-items: center;
-  gap: 0.8rem;
-  color: var(--white);
+  gap: 1.4rem;
+  color: var(--gold-light);
   text-decoration: none;
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: 1.55rem;
-  letter-spacing: 0.02em;
-  padding-bottom: 0.25rem;
-  transition: color 0.3s;
-}
-.mail::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 1px;
-  background: linear-gradient(to right, transparent, var(--gold), transparent);
-  transform: scaleX(0);
-  transition: transform 0.45s ease;
-}
-.mail:hover,
-.mail:focus-visible { color: var(--gold-light); }
-.mail:hover::after,
-.mail:focus-visible::after { transform: scaleX(1); }
-.mail-icon {
-  width: 22px;
-  height: 22px;
-  flex: none;
-  fill: none;
-  stroke: var(--gold);
-  stroke-width: 1.2;
-  stroke-linejoin: round;
-}
-
-.footer-copy {
-  margin-top: 0.9rem;
-  font-size: 0.66rem;
-  letter-spacing: 0.28em;
-  margin-right: -0.28em;
   text-transform: uppercase;
-  color: var(--faint);
+  font-size: 1.12rem;
+  font-weight: 400;
+  letter-spacing: 0.45em;
+  padding: 0.4rem 0 0.4rem 0.45em;   /* gleicht die Sperrung nach dem letzten Buchstaben aus */
+  transition: color 0.3s, text-shadow 0.3s;
 }
+.contact::before,
+.contact::after {
+  content: "";
+  width: 4rem;
+  height: 1px;
+  transition: width 0.45s ease;
+}
+.contact::before { background: linear-gradient(to right, transparent, var(--gold)); }
+.contact::after  { background: linear-gradient(to left,  transparent, var(--gold)); }
+.contact:hover,
+.contact:focus-visible {
+  color: #fff3d1;
+  text-shadow: 0 0 14px rgba(230, 179, 74, 0.55);
+}
+.contact:hover::before,
+.contact:hover::after,
+.contact:focus-visible::before,
+.contact:focus-visible::after { width: 6.5rem; }
 
 a:focus-visible {
   outline: 1px solid var(--gold);
@@ -332,8 +307,8 @@ a:focus-visible {
   .hex-side { width: 130px; opacity: 0.4; }
   .logo { width: 62vw; }
   .wordmark { letter-spacing: 0.3em; margin-right: -0.3em; animation-name: fadeIn; }
-  .mail { font-size: 1.25rem; gap: 0.6rem; }
-  .mail-icon { width: 18px; height: 18px; }
+  .contact { font-size: 0.9rem; gap: 1rem; }
+  .contact::before, .contact::after { width: 2rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
