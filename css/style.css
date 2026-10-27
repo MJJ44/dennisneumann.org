@@ -38,11 +38,15 @@
   --serif: "Cormorant Garamond", Georgia, serif;
   --sans: "Inter", system-ui, -apple-system, sans-serif;
   --pulse: 0;                       /* wird von js/hexagons.js beim Impuls gesetzt */
-  /* Gemeinsame Achse: Trennlinie, Footer-Linie und Kontakt sind exakt so breit wie der Schriftzug.
-     --title-ratio = sichtbare Breite von "dennis neumann" geteilt durch die Schriftgröße (gemessen) */
+  /* Gemeinsames Raster: links "dennis", Mitte Waben-Symbol, rechts "neumann".
+     Beide Seiten sind so breit wie "neumann"; Trennlinie, Footer-Linie und Kontakt nutzen dieselbe Breite.
+     --word-ratio = sichtbare Breite von "neumann" geteilt durch die Schriftgröße (gemessen) */
   --title-size: clamp(1.6rem, 4.6vw, 3.6rem);
-  --title-ratio: 11.92;
-  --axis: calc(var(--title-size) * var(--title-ratio));
+  --word-ratio: 6.5;                /* 6.18 für "neumann" + 0.32 Luft zum Waben-Symbol */
+  --hex-w: 22px;
+  --hex-gap: 1rem;
+  --wing: calc(var(--title-size) * var(--word-ratio));
+  --axis: calc(2 * var(--wing) + var(--hex-w) + 2 * var(--hex-gap));
   color-scheme: dark;
 }
 
@@ -177,28 +181,43 @@ body {
   margin-top: 1.4rem;
   font-family: var(--serif);
   font-weight: 500;
+  display: grid;
+  grid-template-columns: var(--wing) var(--hex-w) var(--wing);
+  column-gap: var(--hex-gap);
   font-size: var(--title-size);
   letter-spacing: 0.42em;
-  /* gleicht den Abstand nach dem letzten Buchstaben aus, damit der Schriftzug mittig sitzt */
-  margin-right: -0.42em;
   line-height: 1.1;
+  white-space: nowrap;
   background: linear-gradient(180deg, #fffdf8 0%, var(--white) 55%, #cfc8b8 100%);
   -webkit-background-clip: text;
           background-clip: text;
   color: transparent;
   animation: wordIn 2s cubic-bezier(0.2, 0.7, 0.2, 1) 0.35s both;
 }
+/* "dennis" endet am linken Flügel, "neumann" beginnt am rechten; das Waben-Symbol trennt beide */
+.word-first {
+  grid-column: 1;
+  justify-self: end;
+  margin-right: -0.42em;            /* Sperrung nach dem letzten Buchstaben ausgleichen */
+  padding-right: 0.32em;
+}
+.word-last {
+  grid-column: 3;
+  justify-self: start;
+  margin-right: -0.42em;
+  padding-left: 0.32em;
+}
 
 .divider {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr var(--hex-w) 1fr;
   align-items: center;
-  gap: 1rem;
+  column-gap: var(--hex-gap);
   width: var(--axis);
   max-width: 100%;
   margin-top: 2.1rem;
 }
 .divider-line {
-  flex: 1;
   height: 1px;
   animation: lineIn 1.4s cubic-bezier(0.2, 0.7, 0.2, 1) 0.9s both;
 }
@@ -211,7 +230,7 @@ body {
   transform-origin: left;
 }
 .divider-hex {
-  width: 22px;
+  width: var(--hex-w);
   height: 19px;
   filter: drop-shadow(0 0 6px rgba(230, 179, 74, 0.55));
   animation: fadeIn 1s ease-out 0.8s both;
@@ -235,8 +254,8 @@ body {
   to   { opacity: 1; transform: none; filter: none; }
 }
 @keyframes wordIn {
-  from { opacity: 0; letter-spacing: 0.7em; margin-right: -0.7em; }
-  to   { opacity: 1; letter-spacing: 0.42em; margin-right: -0.42em; }
+  from { opacity: 0; letter-spacing: 0.6em; }
+  to   { opacity: 1; letter-spacing: 0.42em; }
 }
 @keyframes lineIn {
   from { transform: scaleX(0); }
@@ -318,8 +337,9 @@ a:focus-visible {
   .site-header { padding-top: 1.8rem; }
   .hex-side { width: 130px; opacity: 0.4; }
   .logo { width: 62vw; }
-  :root { --title-ratio: 10.36; }
-  .wordmark { letter-spacing: 0.3em; margin-right: -0.3em; animation-name: fadeIn; }
+  :root { --word-ratio: 5.78; --hex-gap: 0.7rem; }   /* engere Sperrung: 5.46 + 0.32 */
+  .wordmark { letter-spacing: 0.3em; animation-name: fadeIn; }
+  .word-first, .word-last { margin-right: -0.3em; }
   .contact { font-size: 0.9rem; gap: 1rem; }
 }
 
